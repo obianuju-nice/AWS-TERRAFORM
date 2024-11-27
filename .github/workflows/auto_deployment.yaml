@@ -44,3 +44,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' # Only runs when code is merged to main branch after pr is approved.
         run: terraform apply -auto-approve
+        
