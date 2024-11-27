@@ -13,7 +13,7 @@ module "vpc" {
 ##### .... This is a child module for virtual machines #####
 module "ec2-instance" {
    source  = "terraform-aws-modules/ec2-instance/aws"
-  #  source = "git::https://github.com/uju-Nice/aws_Terraform.git/ec2?ref=1.0.0"
+  #  source = "git::https://github.com/obianuju-nice/AWS-TERRAFORM.git/ec2?ref=1.0.0
   # source = "git::ssh://github.com/uju-Nice/aws_Terraform.git?ref=MyBranchName"
    version = "3.5.0"
    ami     = var.ec2_ami
