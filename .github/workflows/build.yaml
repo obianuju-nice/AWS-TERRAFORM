@@ -1,61 +1,61 @@
- #  This build is for local repository with multiple environments
-name:  CI/CD Pipeline to automate terraform commands to build, test and deploy infrastructure
+#  #  This build is for local repository with multiple environments
+# name:  CI/CD Pipeline to automate terraform commands to build, test and deploy infrastructure
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-env:
-  TF_WORKING_DIR: './terraform'  # Directory containing Terraform files or use github repo url
+# env:
+#   TF_WORKING_DIR: './terraform'  # Directory containing Terraform files or use github repo url
 
-jobs:
-  terraform:
-    name: Terraform Workflow
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [dev,uat,prod]
+# jobs:
+#   terraform:
+#     name: Terraform Workflow
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         environment: [dev,uat,prod]
 
-    steps:
-    # Step 1: Checkout the repository
-    - name: Checkout Code
-      uses: actions/checkout@v3
+#     steps:
+#     # Step 1: Checkout the repository
+#     - name: Checkout Code
+#       uses: actions/checkout@v3
 
-    # Step 2: Set up Terraform
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.9.0
+#     # Step 2: Set up Terraform
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v2
+#       with:
+#         terraform_version: 1.9.0
 
-    # - name: Set environment variables
-    #   run: echo "ENVIRONMENT=${{matrix.environment}}" >> $GITHUB_ENV
+#     # - name: Set environment variables
+#     #   run: echo "ENVIRONMENT=${{matrix.environment}}" >> $GITHUB_ENV
 
-    # Step 3: Configure AWS credentials
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-2           #  AWS region where infrastructure is being deployed
+#     # Step 3: Configure AWS credentials
+#     - name: Configure AWS Credentials
+#       uses: aws-actions/configure-aws-credentials@v3
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: us-east-2           #  AWS region where infrastructure is being deployed
 
-    # Step 4: Initialize Terraform
-    - name: Terraform Init
-      working-directory: ${{ env.TF_WORKING_DIR }}
-      run: terraform init
-      env:
-        TF_VAR_cloud_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        TF_VAR_cloud_secret_key: ${{ secrets.AWS_SECRET_KEY_ID }}
+#     # Step 4: Initialize Terraform
+#     - name: Terraform Init
+#       working-directory: ${{ env.TF_WORKING_DIR }}
+#       run: terraform init
+#       env:
+#         TF_VAR_cloud_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         TF_VAR_cloud_secret_key: ${{ secrets.AWS_SECRET_KEY_ID }}
 
 
-    # Step 5: Terraform Plan
-    - name: Terraform Plan
-      run: terraform plan -var="environment=${{matrix.environment}}" 
+#     # Step 5: Terraform Plan
+#     - name: Terraform Plan
+#       run: terraform plan -var="environment=${{matrix.environment}}" 
 
-    # Step 6: Terraform Apply (ONLY for production when code is merged to main)
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' # Ensure apply runs only on the main branch after code is merged
-      run: terraform apply  -auto-approve -var="environment=${{matrix.environment}}" 
+#     # Step 6: Terraform Apply (ONLY for production when code is merged to main)
+#     - name: Terraform Apply
+#       if: github.ref == 'refs/heads/main' # Ensure apply runs only on the main branch after code is merged
+#       run: terraform apply  -auto-approve -var="environment=${{matrix.environment}}" 
